@@ -2,22 +2,49 @@
 
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const PostPresetEnv = require('postcss-preset-env');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const path = require("path");
+
+function getStyleLoader(pre){
+    return [
+        MiniCssExtractPlugin.loader,
+        "css-loader",
+        {
+          loader: "postcss-loader",
+          options: {
+            postcssOptions: {
+              plugins: [
+                [
+                  "postcss-preset-env",
+                  {
+                    // Options
+                  },
+                ],
+              ],
+            },
+          },
+        },
+        pre,
+    ].filter(Boolean);
+}
 
 
 module.exports = {
     // 入口
+    // 相对路径
     entry: "./src/main.js",
 
     // 输出
     output: {
         // __dirname, nodejs变量，代表当前文件的文件目录
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "../dist"),
+        // 开发模式没有输出
         // 入口文件的输出目录
         filename: "static/js/main.js",
         // 自动清空上次打包结果
-        clean: true,
+        // clean: true,
     },
 
     // 加载模块
@@ -26,16 +53,11 @@ module.exports = {
             // loaders的配置
             {
                 test: /\.css$/, // 只检测.css结尾文件
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
+                use: getStyleLoader() // 从右到左
             },
             {
                 test: /\.less$/i,
-                use: [
-                  // compiles Less to CSS
-                  "style-loader",
-                  "css-loader",
-                  "less-loader",
-                ],
+                use: getStyleLoader("less-loader"),
             },
             {
                 test: /\.(png|jpg|gif|wbbp|svg)$/,
@@ -59,30 +81,39 @@ module.exports = {
                 //     presets: ['@babel/preset-env']
                 //   }
                 }
-            },
+              }
         ],
     },
 
+    optimization: {
+        minimizer: [
+          // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+          // `...`,
+          new CssMinimizerPlugin(),
+        ],
+      },
+      
     // 插件
     // plugins的配置
     plugins: [
         new ESLintPlugin({
-            context: path.resolve(__dirname, "src"),
+            context: path.resolve(__dirname, "../src"),
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'public/index.html'),
+            template: path.resolve(__dirname, '../public/index.html'),
         }),
         new MiniCssExtractPlugin({
-            filename: 'static/css/main.css',
+            filename: 'static/css/index.css'
         })
     ],
 
-    devServer: {
-        host: "localhost",
-        port: "3000",
-        open: true,
-    },
+
+    // devServer: {
+    //     host: "localhost",
+    //     port: "3000",
+    //     open: true,
+    // },
 
     // 模式
-    mode: "development",
+    mode: "production",
 }

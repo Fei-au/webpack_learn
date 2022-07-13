@@ -1,8 +1,13 @@
 .box{
     width: 100px;
+    height: 500px;
 }
 
 h1{
-    color: lightblue;
+    color: red;
     background-image: url('../img/1.jpg');
+}
+
+h2{
+    color: red;
 }

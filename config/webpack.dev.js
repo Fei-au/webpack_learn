@@ -3,21 +3,25 @@
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 const path = require("path");
 
 
 module.exports = {
     // 入口
+    // 相对路径
     entry: "./src/main.js",
 
     // 输出
     output: {
         // __dirname, nodejs变量，代表当前文件的文件目录
-        path: path.resolve(__dirname, "dist"),
+        // path: path.resolve(__dirname, "dist"),
+        // 开发模式没有输出
+        path: undefined,
         // 入口文件的输出目录
-        filename: "static/js/main.js",
+        // filename: "static/js/main.js",
         // 自动清空上次打包结果
-        clean: true,
+        // clean: true,
     },
 
     // 加载模块
@@ -26,7 +30,7 @@ module.exports = {
             // loaders的配置
             {
                 test: /\.css$/, // 只检测.css结尾文件
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
+                use: [MiniCssExtractPlugin.loader, "css-loader"] // 从右到左
             },
             {
                 test: /\.less$/i,
@@ -59,7 +63,7 @@ module.exports = {
                 //     presets: ['@babel/preset-env']
                 //   }
                 }
-            },
+            }
         ],
     },
 
@@ -67,13 +71,13 @@ module.exports = {
     // plugins的配置
     plugins: [
         new ESLintPlugin({
-            context: path.resolve(__dirname, "src"),
+            context: path.resolve(__dirname, "../src"),
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'public/index.html'),
+            template: path.resolve(__dirname, '../public/index.html'),
         }),
         new MiniCssExtractPlugin({
-            filename: 'static/css/main.css',
+            filename: './static/css/main.css',
         })
     ],
 
